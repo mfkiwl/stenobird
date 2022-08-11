@@ -1,0 +1,46 @@
+# `U` is a predefined unit of measure that means 19.05mm, which is MX spacing
+points:
+  zones:
+    matrix:
+      columns:
+        outer:
+        pinky:
+        ring.stagger: 0.7cx
+        middle.stagger: 0.2cx
+        index.stagger: -0.33cx
+        inner:
+          stagger: -0.1cx
+      rows:
+        bottom.padding: cy
+        home.padding: cy
+    thumb:
+      anchor:
+        ref: matrix_index_bottom
+        shift: [-0.3cx, -1.8cx]
+        rotate: -1
+      columns:
+        tucky:
+          key.name: thumb_tucky
+        homey:
+          spread: cx
+          stagger: -0.15cy
+          origin: [-cx, -cx]
+          key.name: thumb_homey
+        reachy:
+          spread: cx
+          rotate: 0
+          stagger: -0.15cy
+          key.name: thumb_reachy
+  key:
+    footprints:
+      - type: choc
+        nets:
+          from: GND
+          to: =name
+        params:
+          reverse: true
+          keycaps: true
+          hotswap: true
+pcbs:
+  stenobird:
+    footprints:
