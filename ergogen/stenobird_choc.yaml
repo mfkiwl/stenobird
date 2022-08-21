@@ -1,46 +1,177 @@
-# `U` is a predefined unit of measure that means 19.05mm, which is MX spacing
+units:
+  capx: 15.5       # Key cap size horizontal
+  capy: 18        # Key cap size vertical
+
+  thincapx: 15    # thin caps for the ring/mid
+
+  sf: 15          # Switch footprint (square)
+  xgap: 1.5        # gap between switches
+  xpad: sf + xgap
+  top_bot_gap: 2     # gap between keys on alpha rows
+  ypad: sf + top_bot_gap*2
+  bot_thumb_gap: 5   # gap between botrow and thumbs
+
+  ## const
+  visual_x: 1
+  visual_y: 1
+
 points:
-  zones:
-    matrix:
-      columns:
-        outer:
-        pinky:
-        ring.stagger: 0.7cx
-        middle.stagger: 0.2cx
-        index.stagger: -0.33cx
-        inner:
-          stagger: -0.1cx
-      rows:
-        bottom.padding: cy
-        home.padding: cy
-    thumb:
-      anchor:
-        ref: matrix_index_bottom
-        shift: [-0.3cx, -1.8cx]
-        rotate: -1
-      columns:
-        tucky:
-          key.name: thumb_tucky
-        homey:
-          spread: cx
-          stagger: -0.15cy
-          origin: [-cx, -cx]
-          key.name: thumb_homey
-        reachy:
-          spread: cx
-          rotate: 0
-          stagger: -0.15cy
-          key.name: thumb_reachy
-  key:
-    footprints:
-      - type: choc
-        nets:
-          from: GND
-          to: =name
-        params:
-          reverse: true
-          keycaps: true
-          hotswap: true
+  key:  # Zero out points so they don't have a size unless explicitly set
+    width: 0
+    height: 0
+  zones.matrix:
+    key: &key
+      width: capx
+      height: capy
+      tags:
+        keys: true
+      footprints:
+        - type: choc
+          anchor:
+            rotate: 180
+          nets:
+            from: GND
+            to: =name
+          params:
+            reverse: true
+            keycaps: true
+
+    columns:
+      outer.spread: xpad
+      pinky:
+        spread: xpad
+      ring:
+        key: &key
+          width: thincapx
+          height: capy
+          tags:
+            keys: true
+          footprints:
+            - type: choc
+              anchor:
+                rotate: 180
+              nets:
+                from: GND
+                to: =name
+              params:
+                reverse: true
+                keycaps: true
+        stagger: 0.5cx
+        spread: xpad
+      middle:
+        key: &key
+          width: thincapx
+          height: capy
+          tags:
+            keys: true
+          footprints:
+            - type: choc
+              anchor:
+                rotate: 180
+              nets:
+                from: GND
+                to: =name
+              params:
+                reverse: true
+                keycaps: true
+        stagger: 0.2cx
+        spread: xpad
+      index:
+        stagger: -0.33cx
+        spread: xpad 
+      inner:
+        spread: xpad
+    rows:
+      bottom.padding: ypad
+      home.padding: ypad
+  zones.thumb:
+    anchor:
+      ref: matrix_index_bottom
+      shift: [-capx*0.5, -bot_thumb_gap*1.5 + -capy]
+      rotate: 0
+    key: &key
+      width: capx
+      height: capy
+      tags:
+        keys: true
+      footprints:
+        - type: choc
+          anchor:
+            rotate: 180
+          nets:
+            from: GND
+            to: =name
+          params:
+            reverse: true
+            keycaps: true
+    columns:
+      tucky:
+        key.name: thumb_tucky
+      homey:
+        spread: xpad
+        stagger: 0.12cy
+        key.name: thumb_homey
+      reachy:
+        spread: xpad
+        rotate: 0
+        stagger: -0.12cy
+        key.name: thumb_reachy
+
+
+     # Outline Extents
+  # ===============
+  zones.outline_top_left:
+    key.name: outline_top_left
+    anchor:
+    - ref: matrix_middle_home
+      shift: [0.75sf, 0.75sf]
+      affect: y
+    - ref: matrix_outer_home
+      affect: x
+      shift: [-0.75sf, 0.75sf]
+  zones.outline_top_right:
+    key.name: outline_top_right
+    anchor:
+    - ref: outline_top_left
+    - ref: thumb_reachy
+      affect: x
+      shift: [0.75sf, -0.75sf]
+  zones.outline_bottom_left:
+    key.name: outline_bottom_left
+    anchor:
+    - ref: outline_top_left
+    - ref: thumb_reachy
+      affect: y
+      shift: [0.75sf, -0.75sf]
+  zones.outline_bottom_right:
+    key.name: outline_bottom_right
+    anchor:
+    - ref: outline_top_right
+    - ref: outline_bottom_left
+      affect: y
+
+outlines.exports:
+  _outer:
+    - type: polygon
+      points:
+      - ref: outline_top_left
+      - ref: outline_top_right
+      - ref: outline_bottom_right
+      - ref: outline_bottom_left
+  panel:
+    - name: _outer
+      fillet: 3
+  key_demo:
+    - panel
+    - operation: stack
+      type: keys
+      side: left
+      tags: [keys]
+      size: [capx, capy]
+      bound: false
+
 pcbs:
-  stenobird:
-    footprints:
+  cockatiel:
+      outlines:
+        main:
+          outline: panel
